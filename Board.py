@@ -18,7 +18,7 @@ RIGHT = 4
 
 # Steps to walk through board in each specific direction while setting list of values in the format
 # expected by the merge method
-STEPS = {
+_STEPS = {
     UP: (1, 0),
     DOWN: (-1, 0),
     LEFT: (0, 1),
@@ -121,14 +121,14 @@ class Board:
         for initial in self.initials[direction]:
             temp_line = []  # temp line with values to be sent to merge method
             for i in range(bound):
-                row = initial[0] + (i * STEPS[direction][0])
-                col = initial[1] + (i * STEPS[direction][1])
+                row = initial[0] + (i * _STEPS[direction][0])
+                col = initial[1] + (i * _STEPS[direction][1])
                 val = self.get_cell(row, col)
                 temp_line.append(val)
             new_line = self.merge(temp_line)  # processes the movement
             for i in range(bound):  # sets processed line back on the board
-                row = initial[0] + (i * STEPS[direction][0])
-                col = initial[1] + (i * STEPS[direction][1])
+                row = initial[0] + (i * _STEPS[direction][0])
+                col = initial[1] + (i * _STEPS[direction][1])
                 if new_line[i] != self.get_cell(row, col):  # something has moved
                     cells_moved = True
                 self.set_cell(row, col, new_line[i])  # sets the value on the cell
@@ -152,14 +152,14 @@ class Board:
         for initial in self.initials[direction]:
             temp_line = []  # temp line with values to be sent to merge method
             for i in range(bound):
-                row = initial[0] + (i * STEPS[direction][0])
-                col = initial[1] + (i * STEPS[direction][1])
+                row = initial[0] + (i * _STEPS[direction][0])
+                col = initial[1] + (i * _STEPS[direction][1])
                 val = self.get_cell(row, col)
                 temp_line.append(val)
             new_line = self.merge(temp_line)  # gets new state
             for i in range(bound):  # goes through each cell checking if something has moved
-                row = initial[0] + (i * STEPS[direction][0])
-                col = initial[1] + (i * STEPS[direction][1])
+                row = initial[0] + (i * _STEPS[direction][0])
+                col = initial[1] + (i * _STEPS[direction][1])
                 if new_line[i] != self.get_cell(row, col):  # something has moved
                     return True
         return False
@@ -169,6 +169,12 @@ class Board:
             Checks if board still has a valid move
         """
         return self.is_valid_move(UP) or self.is_valid_move(DOWN) or self.is_valid_move(RIGHT) or self.is_valid_move(LEFT)
+
+    def has_won(self):
+        """
+            Returns true if player has built a cell's value up to 2048
+        """
+        return self.hasReached2048
 
 
 
