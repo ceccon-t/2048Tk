@@ -92,4 +92,5 @@ playing = True
 # START GAME
 
 root.geometry("+400+75")
+root.title("2048Tk")
 root.mainloop()
