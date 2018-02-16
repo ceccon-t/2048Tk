@@ -44,7 +44,7 @@ def keydown(event):
 
 def new_game():
     """
-        Start a new game
+        Starts a new game
     """
     global board, statusMessage, playing
     board.reset()
@@ -52,7 +52,75 @@ def new_game():
     playing = True
 
 
+def set_board_size(num_rows, num_cols):
+    """
+        Changes the size of the board to be num_rows x num_cols.
+        Game is reset after the change.
+    """
+    global rows, columns, board, gameFrame, playing
+    if num_rows != rows or num_cols != columns:
+        rows = num_rows
+        columns = num_cols
+        board.clear()
+        board = Board(gameFrame, rows, columns)
+        statusMessage["text"] = " "
+        playing = True
+
+
 # Helper functions for menus
+# Game menu functions
+def game_change_size():
+    """
+        Opens interface to allow player to choose the size of the board
+    """
+    global rows, columns
+    game_change_size_window = Toplevel(root, padx=10, pady=10)
+    game_change_size_window.title("Change dimensions")
+    game_change_size_window.transient(root)
+    game_change_size_window.resizable(False, False)
+
+    instruction_msg = "Enter the desired value below, valid values are integers between 2 and 9.\n" \
+                      "Please consider that the game window can become quite big for large enough values."
+    Label(game_change_size_window, text=instruction_msg, pady=10).pack()
+
+    var_rows = IntVar(game_change_size_window)
+    var_rows.set(rows)
+    var_cols = IntVar(game_change_size_window)
+    var_cols.set(columns)
+
+    opt_frame = Frame(game_change_size_window, padx=5, pady=15)
+    row_lb = Label(opt_frame, text="Rows: ", pady=5)
+    row_lb.grid(row=0, column=0, sticky=E)
+    row_sbox = Spinbox(opt_frame, from_=2, to=9, width=1, textvariable=var_rows)
+    row_sbox.grid(row=0, column=1)
+    col_lb = Label(opt_frame, text="Columns: ", pady=5)
+    col_lb.grid(row=1, column=0, sticky=E)
+    col_sbox = Spinbox(opt_frame, from_=2, to=9, width=1, textvariable=var_cols)
+    col_sbox.grid(row=1, column=1)
+    opt_frame.pack()
+
+    def validate_size(new_rows, new_cols):
+        """
+            Helper function to validate player input
+        """
+        try:
+            r = int(new_rows)
+            c = int(new_cols)
+            are_ints = True
+        except ValueError:
+            are_ints = False
+        if are_ints:
+            if (r >= 2 and r <= 9) and (c >= 2 and c <= 9):
+                set_board_size(r, c)
+                game_change_size_window.destroy()
+
+    buttons_frame = Frame(game_change_size_window)
+    Button(buttons_frame, text="OK", command=lambda: validate_size(var_rows.get(), var_cols.get())).grid(row=0, column=0)
+    Button(buttons_frame, text="Cancel", command=game_change_size_window.destroy).grid(row=0, column=1)
+    buttons_frame.pack()
+
+
+# Help menu functions
 def help_gameplay():
     """
         Shows window with information on how to play
@@ -92,11 +160,22 @@ def help_about():
 
 # SETTING THINGS UP
 
+# Game variables
+rows = 4     # starts with a 4x4 board
+columns = 4
+
 # Main window
 root = Tk()
 
 # Menus
 menu_bar = Menu(root)
+
+# Game Menu
+game_menu = Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Game", menu=game_menu)
+game_menu.add_command(label="New game", command=new_game, underline=0)
+game_menu.add_separator()
+game_menu.add_command(label="Change board size", command=game_change_size, underline=0)
 
 # Help Menu
 help_menu = Menu(menu_bar, tearoff=0)
@@ -121,7 +200,7 @@ titleLabel = Label(titleFrame, text="2048", font=titleFontSpec, pady=30)
 titleLabel.pack()
 
 # Game section
-board = Board(gameFrame, 4, 4)
+board = Board(gameFrame, rows, columns)
 
 # Interaction section
 statusMessage = Label(interactionFrame, text=" ", pady=30)

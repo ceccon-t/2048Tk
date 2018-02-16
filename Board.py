@@ -51,6 +51,13 @@ class Board:
         self.new_cell()
         self.new_cell()
 
+    def clear(self):
+        """
+            Clears the board from the game window by clearing its cells (visually and logically)
+        """
+        self.cells = []
+        self.fr.destroy()
+
     def new_cell(self):
         """
             Generates a new cell, with 90% chances of having a value of 2 and 10% chances for 4
